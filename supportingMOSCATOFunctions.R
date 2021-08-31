@@ -206,15 +206,15 @@ tensorElasticNet <- function(Z_tensor,     #Tensor for the independent variables
     #Iteratively update the dimensions
     for(d in 1:D){
       #Multiply out the other dimensions
-      X_prime <- FUNC_gradient_wk_fWb_X(W_=unlist(beta_t2),
+      Z_prime <- FUNC_gradient_wk_fWb_X(W_=unlist(beta_t2),
                                         X_=Z_tensor,
                                         k_=d)
-      colnames(X_prime) <- paste0("x", 1:ncol(X_prime))
+      colnames(Z_prime) <- paste0("x", 1:ncol(Z_prime))
       #Execute the final model
       if(is.null(maxSelect)){
         model_t <- glmnet::glmnet(y=y, 
                                   offset=rep(alpha_t, length(y)),
-                                  x=X_prime,
+                                  x=Z_prime,
                                   family=distY,
                                   alpha=glmnetAlpha[d],
                                   standardize=FALSE,
@@ -225,7 +225,7 @@ tensorElasticNet <- function(Z_tensor,     #Tensor for the independent variables
       }else {
         model_t <- glmnet::glmnet(y=y, 
                                   offset=rep(alpha_t, length(y)),
-                                  x=X_prime,
+                                  x=Z_prime,
                                   family=distY,
                                   alpha=glmnetAlpha[d],
                                   standardize=FALSE,
@@ -239,14 +239,14 @@ tensorElasticNet <- function(Z_tensor,     #Tensor for the independent variables
     
     ###Update alpha
     #Multiply out all coefficients
-    X_prime <- FUNC_f_Wb_X(W_=unlist(beta_t2), X_=Z_tensor)
+    Z_prime <- FUNC_f_Wb_X(W_=unlist(beta_t2), X_=Z_tensor)
     alpha_t <- glm(y ~ 1, 
-                   offset=X_prime,
+                   offset=Z_prime,
                    family="gaussian")$coefficients[1]
     
     ###Check for convergence
     #New likelihood
-    logLik2 <- log(length(y)/sqrt(2*pi))-0.5*sum((y-(alpha_t+X_prime))^2)
+    logLik2 <- log(length(y)/sqrt(2*pi))-0.5*sum((y-(alpha_t+Z_prime))^2)
     
     #Add the values to the list to check for convergence afterwards
     if(numIter==0){
