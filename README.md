@@ -209,3 +209,5 @@ Using the tuned alpha and max values from STEP3, the final feature selections ma
   selectX <- which(MOSCATOFinal$returnX==1)
   selectG <- which(MOSCATOFinal$returnG==1)
 ```
+
+The tensorElasticNet function may return either "Did not converge!" or "Converged!" in the log. If "Did not converge!" was returned, this means that the Block Relaxation Algorithm did not converge on a consistent solution in estimating the coefficients from the tensor regression model. Sometimes re-running the method resolves this issue due to different random initializations.
